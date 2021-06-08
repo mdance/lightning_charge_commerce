@@ -1,0 +1,21 @@
+<?php
+/**
+ * @file
+ * Provides install, and update hooks.
+ */
+
+use Drupal\Core\Field\BaseFieldDefinition;
+
+/**
+ * Adds the title field to the lightning network payment method.
+ */
+function lightning_charge_commerce_update_9000() {
+  $field_storage_definition = BaseFieldDefinition::create('string')
+    ->setLabel(t('Title'))
+    ->setDescription(t('Provides the title.'))
+    ->setRevisionable(TRUE)
+    ->setTranslatable(TRUE);
+
+  \Drupal::entityDefinitionUpdateManager()
+    ->installFieldStorageDefinition('title', 'commerce_payment_method', 'commerce_payment', $field_storage_definition);
+}

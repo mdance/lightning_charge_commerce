@@ -1,0 +1,5 @@
+lightning_charge_commerce.invoices:
+  route_name: lightning_charge_commerce.invoices
+  base_route: entity.commerce_order.canonical
+  title: Invoices
+  weight: 10

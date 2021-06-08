@@ -1,0 +1,23 @@
+lightning_charge_commerce.invoices:
+  path: '/admin/commerce/orders/{commerce_order}/invoices'
+  defaults:
+    _form: 'Drupal\lightning_charge_commerce\Form\OrderInvoicesForm'
+    _title: 'Invoices'
+  options:
+    parameters:
+      commerce_order:
+        type: 'entity:commerce_order'
+  requirements:
+    _permission: 'view commerce_order invoices'
+
+lightning_charge_commerce.invoice.new:
+  path: '/admin/commerce/orders/{commerce_order}/invoices/new'
+  defaults:
+    _form: '\Drupal\lightning_charge_commerce\Form\OrderInvoiceForm'
+    _title: 'Create New Order Invoice'
+  options:
+    parameters:
+      commerce_order:
+        type: 'entity:commerce_order'
+  requirements:
+    _permission: 'create lightning_charge invoices'

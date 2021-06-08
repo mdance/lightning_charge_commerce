@@ -1,0 +1,100 @@
+<?php
+/**
+ * @file
+ * Provides lightning charge commerce functionality.
+ */
+
+use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Component\Utility\NestedArray;
+use Drupal\lightning_charge_commerce\LightningChargeCommerceConstants;
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function lightning_charge_commerce_form_lightning_charge_invoices_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $show_order = $form['#show_order'] ?? FALSE;
+
+  if (!$show_order) {
+    return;
+  }
+
+  $offset = 1;
+
+  $parents = [
+    'items',
+    '#header',
+  ];
+
+  $header = &NestedArray::getValue($form, $parents);
+
+  $replacement = [
+    'order' => [
+      'field' => 'order',
+      'data' => t('Order'),
+    ],
+  ];
+
+  $before = array_slice($header, 0, $offset, TRUE);
+  $after = array_slice($header, $offset, count($header), TRUE);
+  $header = $before + $replacement + $after;
+
+  $parents = [
+    'items',
+    '#options',
+  ];
+
+  $options = &NestedArray::getValue($form, $parents);
+
+  $storage = \Drupal::entityTypeManager()->getStorage('commerce_payment');
+
+  foreach ($options as $id => &$option) {
+    $query = $storage->getQuery();
+
+    $link = '';
+
+    $query->condition('remote_id', $id);
+
+    $ids = $query->execute();
+
+    $payments = $storage->loadMultiple($ids);
+
+    foreach ($payments as $payment) {
+      /** @var \Drupal\commerce_payment\Entity\Payment $payment */
+      $order = $payment->getOrder();
+
+      if ($order) {
+        $link = $order->toLink();
+      }
+
+      break;
+    }
+
+    $replacement = [
+      'order' => $link,
+    ];
+
+    $before = array_slice($option, 0, $offset, TRUE);
+    $after = array_slice($option, $offset, count($option), TRUE);
+    $option = $before + $replacement + $after;
+  }
+}
+
+/**
+ * Implements hook_entity_access().
+ */
+function lightning_charge_commerce_commerce_payment_access(EntityInterface $entity, $operation, AccountInterface $account) {
+  $id = $entity->getPaymentGatewayId();
+
+  if ($id != LightningChargeCommerceConstants::BUNDLE) {
+    return;
+  }
+
+  if ($operation == 'delete') {
+    $reason = 'A lightning network payment cannot be deleted.';
+
+    return AccessResult::forbidden($reason);
+  }
+}

@@ -1,0 +1,9 @@
+name: Lightning Charge Commerce
+type: module
+description: 'Provides lightning charge commerce functionality.'
+package: Lightning
+core_version_requirement: ^8.8 || ^9
+dependencies:
+  - lightning_charge
+  - commerce:commerce
+  - commerce:commerce_payment

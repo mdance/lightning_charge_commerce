@@ -1,0 +1,7 @@
+services:
+  lightning_charge_commerce.event_subscriber:
+    class: Drupal\lightning_charge_commerce\EventSubscriber\LightningChargeCommerceEventSubscriber
+    arguments:
+      - '@entity_type.manager'
+    tags:
+      - { name: event_subscriber }

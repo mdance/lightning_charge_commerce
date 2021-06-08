@@ -1,0 +1,4 @@
+lightning_charge_commerce_order_paid:
+  category: commerce_order
+  label: 'Order paid'
+  template: '<p>An order payment was made through the lightning network.</p>'
